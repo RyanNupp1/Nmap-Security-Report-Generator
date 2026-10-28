@@ -1,79 +1,98 @@
-
 # Nmap Security Report Generator
 
-A Python-based security lab project that parses Nmap XML scan results and generates structured security assessment reports in TXT, JSON, and HTML formats.
+A Python-based cybersecurity lab project that parses Nmap XML scan results and generates structured security assessment reports in plain text, JSON, and HTML.
 
-## Features
+The project demonstrates XML parsing, security-oriented rule evaluation, report generation, and automated regression testing.
 
-- Parses Nmap XML scan output.
-- Inventories hosts and open ports.
-- Applies configurable rules to identify services for security review.
+Features
+
+- Parses existing Nmap XML scan output.
+- Inventories discovered hosts and open ports.
+- Applies configurable rules to identify services that warrant security review.
 - Assigns review severity levels: High, Medium, Low, and Informational.
 - Generates TXT, JSON, and HTML reports.
 - Flags unclassified open services for further investigation.
-- Includes automated tests for report consistency.
+- Validates report counts, host inventory, severity totals, and expected findings through automated tests.
 
-## Project Files
+## Project Structure
 
-| File | Purpose |
+| File or directory | Purpose |
 |---|---|
 | `nmap_reporter.py` | Main report generator |
-| `test_reports.py` | Automated report validation tests |
-| `headers.py` | Local HTTP assessment exercise |
-| `.gitignore` | Excludes generated reports, scan XML, and Python cache files |
+| `test_reports.py` | Automated regression tests |
+| `tests/fixtures/` | Static XML test inputs |
+| `headers.py` | HTTP assessment exercise |
+| `.gitignore` | Excludes generated reports, local scan data, and Python cache files |
 
 ## Requirements
 
 - Python 3
-- Nmap, for producing scan data
+- Nmap, to generate scan data
 - Termux or another Python-compatible environment
 
-The report generator itself processes existing Nmap XML files; it does not need to run Nmap for every report.
+The report generator processes existing XML files. Nmap does not need to run every time a report is generated.
 
 ## Usage
 
-Generate an XML scan of a system you own or are explicitly authorized to test:
+1. Generate scan data
 
-```bash
+Run Nmap against a system you own or are explicitly authorized to test.
+
+Example using localhost:
+
 nmap -sV -oX scan.xml 127.0.0.1
-```
 
-Generate reports from the XML:
+The "-sV" option enables service/version detection, and "-oX" writes the results in XML format.
 
-```bash
+2. Generate reports
+
+From the project directory, run:
+
 python nmap_reporter.py scan.xml
-```
 
-Run the report validation tests:
+The tool processes the supplied XML and generates timestamped TXT, JSON, and HTML reports. Generated report filenames include the input scan's base name and a timestamp.
 
-```bash
+3. Run the regression tests
+
+Run:
+
+python -m py_compile test_reports.py
 python test_reports.py
-```
 
-The test script currently references specific timestamped sample reports. Generate the matching reports first, or update the test configuration when report filenames change.
+The tests use the XML fixtures included in "tests/fixtures/" and validate three scenarios:
 
-## Output
+- A scan with no open ports and no findings.
+- A recognized development-server service that produces a Medium-severity finding.
+- An unclassified open service that produces an Informational finding.
 
-The report generator produces:
+The tests also check consistency between report summaries, host inventories, finding records, and severity totals.
 
-- A plain-text report for quick review
-- A JSON report for structured processing
-- An HTML report for browser-based review
+A successful run should report:
+
+Results: 3 passed, 0 failed
+
+## Output Formats
+
+The report generator produces three formats:
+
+- TXT: Human-readable assessment summaries.
+- JSON: Structured data suitable for further processing.
+- HTML: Browser-readable reports for convenient review.
 
 ## Limitations
 
-This is a learning and portfolio project, not a replacement for a professional vulnerability scanner.
+This is a cybersecurity learning and portfolio project, not a replacement for a professional vulnerability scanner.
 
-- Findings are preliminary indicators, not confirmed vulnerabilities.
-- Service identification can be incomplete or inaccurate.
-- An open port does not by itself establish that a vulnerability exists.
-- Results depend on the supplied Nmap XML data and configured rules.
-- Findings should be manually verified before making security decisions.
+- Findings are preliminary indicators for investigation, not confirmed vulnerabilities.
+- Service identification may be incomplete or inaccurate.
+- An open port alone does not establish that a vulnerability exists.
+- Results depend on the supplied Nmap XML data and the configured rules.
+- Findings should be independently verified before making security decisions.
 
 ## Authorized Use
 
-Use Nmap only on systems you own or have explicit permission to assess. Keep sensitive scan data and generated reports private unless you have verified that they are safe to publish.
+Only scan systems you own or have explicit permission to assess. Keep sensitive scan data and generated reports private unless you have reviewed them and confirmed that they are safe to publish.
 
 ## Project Status
 
-Educational security automation project under active development.
+An actively developed learning and portfolio project. The current regression suite covers three XML input scenarios. Additional test cases, documentation, and rule validation can be added as the project evolves.
