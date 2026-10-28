@@ -12,7 +12,9 @@ __pycache__/
 http_assessment.txt
 nmap_report.txt
 notes.txt
-
+!tests/
+!tests/fixtures/
+!tests/fixtures/*.xml
 # Local environment files and secrets
 .env
 .env.*

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///data/data/com.termux/files/usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.993 scan initiated Tue Oct 27 20:31:12 2026 as: nmap -sV -&#45;version-light -p 45678 -oX unknown_service_test.xml 127.0.0.1 -->
+<nmaprun scanner="nmap" args="nmap -sV -&#45;version-light -p 45678 -oX unknown_service_test.xml 127.0.0.1" start="1793147472" startstr="Tue Oct 27 20:31:12 2026" version="7.993" xmloutputversion="1.05">
+<scaninfo type="connect" protocol="tcp" numservices="1" services="45678"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<hosthint><status state="up" reason="unknown-response" reason_ttl="0"/>
+<address addr="127.0.0.1" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<host starttime="1793147472" endtime="1793147472"><status state="up" reason="conn-refused" reason_ttl="0"/>
+<address addr="127.0.0.1" addrtype="ipv4"/>
+<hostnames>
+<hostname name="localhost" type="PTR"/>
+</hostnames>
+<ports><port protocol="tcp" portid="45678"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+</ports>
+<times srtt="739" rttvar="3940" to="100000"/>
+</host>
+<runstats><finished time="1793147472" timestr="Tue Oct 27 20:31:12 2026" summary="Nmap done at Tue Oct 27 20:31:12 2026; 1 IP address (1 host up) scanned in 0.60 seconds" elapsed="0.60" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

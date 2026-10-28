@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///data/data/com.termux/files/usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.993 scan initiated Tue Oct 27 20:25:55 2026 as: nmap -p 8080 -oX no_open_ports.xml 127.0.0.1 -->
+<nmaprun scanner="nmap" args="nmap -p 8080 -oX no_open_ports.xml 127.0.0.1" start="1793147155" startstr="Tue Oct 27 20:25:55 2026" version="7.993" xmloutputversion="1.05">
+<scaninfo type="connect" protocol="tcp" numservices="1" services="8080"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<hosthint><status state="up" reason="unknown-response" reason_ttl="0"/>
+<address addr="127.0.0.1" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<host starttime="1793147155" endtime="1793147155"><status state="up" reason="conn-refused" reason_ttl="0"/>
+<address addr="127.0.0.1" addrtype="ipv4"/>
+<hostnames>
+<hostname name="localhost" type="PTR"/>
+</hostnames>
+<ports><port protocol="tcp" portid="8080"><state state="closed" reason="conn-refused" reason_ttl="0"/><service name="http-proxy" method="table" conf="3"/></port>
+</ports>
+<times srtt="1842" rttvar="4263" to="100000"/>
+</host>
+<runstats><finished time="1793147155" timestr="Tue Oct 27 20:25:55 2026" summary="Nmap done at Tue Oct 27 20:25:55 2026; 1 IP address (1 host up) scanned in 0.05 seconds" elapsed="0.05" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

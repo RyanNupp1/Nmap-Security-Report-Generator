@@ -8,21 +8,21 @@ REPORTER = ROOT / "nmap_reporter.py"
 
 TESTS = [
     {
-        "input": "no_open_ports.xml",
+        "input": "tests/fixtures/no_open_ports.xml",
         "expected_ports": 0,
         "expected_findings": 0,
         "expected_severity": None,
         "expected_id": None,
     },
     {
-        "input": "scan.xml",
+        "input": "tests/fixtures/scan.xml",
         "expected_ports": 1,
         "expected_findings": 1,
         "expected_severity": "Medium",
         "expected_id": "NMAP-DEV_SERVER",
     },
     {
-        "input": "unknown_service_test.xml",
+        "input": "tests/fixtures/unknown_service_test.xml",
         "expected_ports": 1,
         "expected_findings": 1,
         "expected_severity": "Informational",
