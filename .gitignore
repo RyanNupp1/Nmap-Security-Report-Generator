@@ -1,0 +1,19 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# Generated timestamped reports
+*_report_*.txt
+*_report_*.json
+*_report_*.html
+
+# Raw scan data and local assessment artifacts
+*.xml
+http_assessment.txt
+nmap_report.txt
+notes.txt
+
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
