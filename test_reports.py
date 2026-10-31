@@ -1,3 +1,4 @@
+import tempfile
 import json
 import subprocess
 import sys
@@ -33,7 +34,7 @@ TESTS = [
 ]
 
 
-def generate_report(test):
+def generate_report(test, output_dir):
     source = ROOT / test["input"]
 
     if not source.is_file():
@@ -42,7 +43,13 @@ def generate_report(test):
         )
 
     result = subprocess.run(
-        [sys.executable, str(REPORTER), str(source)],
+        [
+            sys.executable,
+            str(REPORTER),
+            str(source),
+            "--out-dir",
+            str(output_dir),
+        ],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -55,16 +62,14 @@ def generate_report(test):
             f"stderr: {result.stderr}"
         )
 
-    pattern = f"{source.stem}_report_*.json"
-    reports = sorted(ROOT.glob(pattern))
+    reports = sorted(output_dir.glob("*.json"))
 
     if not reports:
         raise FileNotFoundError(
-            f"No JSON report found matching {pattern}"
+            "No JSON report was generated."
         )
 
     return reports[-1]
-
 
 def validate_report(test, path):
     errors = []
@@ -134,7 +139,62 @@ def validate_report(test, path):
 
     return errors
 
+def test_html_escaping(output_dir):
+    source = ROOT / "tests/fixtures/scan.xml"
+    test_dir = output_dir / "html_escaping"
+    test_dir.mkdir(parents=True, exist_ok=True)
 
+    malicious_xml = test_dir / "hostile-input.xml"
+    reports_dir = test_dir / "reports"
+    reports_dir.mkdir()
+
+    xml = source.read_text(encoding="utf-8")
+    xml = xml.replace(
+        'name="localhost"',
+        'name="&lt;script&gt;alert(1)&lt;/script&gt;"',
+        1,
+    )
+    malicious_xml.write_text(xml, encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(REPORTER),
+            str(malicious_xml),
+            "--out-dir",
+            str(reports_dir),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"HTML escaping test failed to generate report: "
+            f"{result.stderr}"
+        )
+
+    html_files = list(reports_dir.glob("*.html"))
+    if not html_files:
+        raise FileNotFoundError(
+            "HTML escaping test did not generate an HTML report."
+        )
+
+    html = html_files[0].read_text(encoding="utf-8")
+
+    escaped = "&lt;script&gt;alert(1)&lt;/script&gt;"
+    executable = "<script>alert(1)</script>"
+
+    if escaped not in html:
+        raise AssertionError(
+            "Untrusted hostname was not HTML-escaped."
+        )
+
+    if executable in html:
+        raise AssertionError(
+            "Raw executable script markup appeared in HTML."
+        )
 def main():
     if not REPORTER.is_file():
         print(f"FAIL: Reporter not found: {REPORTER.name}")
@@ -142,27 +202,40 @@ def main():
 
     failures = 0
 
-    for test in TESTS:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        output_dir = Path(temp_dir)
+
+        for test in TESTS:
+            try:
+                report_path = generate_report(test, output_dir)
+                errors = validate_report(test, report_path)
+            except (OSError, RuntimeError) as exc:
+                errors = [str(exc)]
+
+            if errors:
+                failures += 1
+                print(f"\nFAIL: {test['input']}")
+                for error in errors:
+                    print(f"  - {error}")
+            else:
+                print(f"PASS: {test['input']}")
+
+            for report in output_dir.iterdir():
+                report.unlink()
+
         try:
-            report_path = generate_report(test)
-            errors = validate_report(test, report_path)
-        except (OSError, RuntimeError) as exc:
-            errors = [str(exc)]
-            report_path = None
-
-        if errors:
+            test_html_escaping(output_dir)
+            print("PASS: HTML escaping")
+        except (OSError, RuntimeError, AssertionError) as exc:
             failures += 1
-            print(f"\nFAIL: {test['input']}")
-            for error in errors:
-                print(f"  - {error}")
-        else:
-            print(f"PASS: {test['input']}")
+            print("\nFAIL: HTML escaping")
+            print(f"  - {exc}")
 
-    passed = len(TESTS) - failures
+    total_tests = len(TESTS) + 1
+    passed = total_tests - failures
+
     print(f"\nResults: {passed} passed, {failures} failed")
 
     return 1 if failures else 0
-
-
 if __name__ == "__main__":
     sys.exit(main())
